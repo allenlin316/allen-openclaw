@@ -45,98 +45,127 @@ async function fetchNews() {
   };
 
   try {
-    // Tech News - Using RSS feed from HN/Tech sources
+    // Finance News from multiple sources
+    const financeSources = [
+      {
+        name: 'Bloomberg',
+        url: 'https://api.rss2json.com/v1/api.json?rss_url=https://feeds.bloomberg.com/markets/news.rss',
+        category: 'finance'
+      },
+      {
+        name: 'Reuters Finance',
+        url: 'https://api.rss2json.com/v1/api.json?rss_url=https://feeds.reuters.com/reuters/businessNews',
+        category: 'finance'
+      }
+    ];
+
+    // Tech News - Using RSS feed from multiple sources
     const techSources = [
       {
-        name: 'TechCrunch Headlines',
+        name: 'TechCrunch',
         url: 'https://api.rss2json.com/v1/api.json?rss_url=https://techcrunch.com/feed/',
+        category: 'tech'
+      },
+      {
+        name: 'The Verge',
+        url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.theverge.com/rss/index.xml',
         category: 'tech'
       }
     ];
 
-    // Finance News - Using mock data for now
-    // In production, use financial APIs like Alpha Vantage, IEX Cloud, etc.
-    const financeNews = [
-      {
-        id: `fin-${Date.now()}-1`,
-        title: '台股收盤漲幅達1.5%，金融科技股領漲',
-        description: '台灣股市今日收盤上漲，金融科技相關股票表現亮眼，投資者看好科技產業前景。',
-        url: '#',
-        source: '財經新聞',
-        category: 'finance',
-        image: '📈',
-        date: new Date().toISOString(),
-        tags: ['台股', '金融科技', '投資']
-      },
-      {
-        id: `fin-${Date.now()}-2`,
-        title: '美元兌台幣升至32.5，央行關注匯率動向',
-        description: '美元對台幣匯率持續升值，央行表示將密切關注市場動向以維持匯率穩定。',
-        url: '#',
-        source: '外匯市場',
-        category: 'finance',
-        image: '💱',
-        date: new Date().toISOString(),
-        tags: ['外匯', '匯率', '美元']
+    // Fetch Finance News
+    for (const source of financeSources) {
+      try {
+        const response = await axios.get(source.url, { timeout: 5000 });
+        if (response.data && response.data.items) {
+          const articles = response.data.items.slice(0, 3).map((item, idx) => ({
+            id: `fin-${Date.now()}-${source.name}-${idx}`,
+            title: item.title || 'Untitled',
+            description: item.description ? stripHtml(item.description).substring(0, 200) : '暫無描述',
+            url: item.link || 'javascript:void(0)',
+            source: source.name,
+            category: 'finance',
+            image: '📈',
+            date: item.pubDate || new Date().toISOString(),
+            tags: ['財經', '市場']
+          }));
+          newsData.finance.push(...articles);
+        }
+      } catch (err) {
+        console.warn(`Failed to fetch from ${source.name} (finance):`, err.message);
       }
-    ];
+    }
 
-    newsData.finance = financeNews;
-
-    // Fetch from RSS2JSON service
+    // Fetch Tech News
     for (const source of techSources) {
       try {
         const response = await axios.get(source.url, { timeout: 5000 });
         if (response.data && response.data.items) {
-          const articles = response.data.items.slice(0, 5).map((item, idx) => ({
-            id: `tech-${Date.now()}-${idx}`,
+          const articles = response.data.items.slice(0, 3).map((item, idx) => ({
+            id: `tech-${Date.now()}-${source.name}-${idx}`,
             title: item.title || 'Untitled',
-            description: item.description ? item.description.substring(0, 200) : '',
-            url: item.link || '#',
+            description: item.description ? stripHtml(item.description).substring(0, 200) : '暫無描述',
+            url: item.link || 'javascript:void(0)',
             source: source.name,
             category: 'tech',
             image: '💻',
             date: item.pubDate || new Date().toISOString(),
-            tags: ['Technology', 'Innovation']
+            tags: ['科技', '創新']
           }));
           newsData.tech.push(...articles);
         }
       } catch (err) {
-        console.warn(`Failed to fetch from ${source.name}:`, err.message);
-        // Add default tech news if fetch fails
-        newsData.tech.push(
-          {
-            id: `tech-${Date.now()}-default-1`,
-            title: '人工智能技術突破，新型芯片性能提升200%',
-            description: '最新研究表明，新一代AI芯片在推理速度和能效上取得重大突破，有望推動AI應用普及。',
-            url: '#',
-            source: '科技新聞',
-            category: 'tech',
-            image: '🤖',
-            date: new Date().toISOString(),
-            tags: ['AI', '芯片', '科技']
-          },
-          {
-            id: `tech-${Date.now()}-default-2`,
-            title: '雲計算市場競爭加劇，新興廠商快速成長',
-            description: '雲服務市場增速放緩，但邊緣計算和混合雲解決方案成為新增長點，吸引多家企業投資。',
-            url: '#',
-            source: '科技產業',
-            category: 'tech',
-            image: '☁️',
-            date: new Date().toISOString(),
-            tags: ['雲計算', '邊緣計算', '企業']
-          }
-        );
+        console.warn(`Failed to fetch from ${source.name} (tech):`, err.message);
       }
     }
 
+    // If no finance news, add fallback data
+    if (newsData.finance.length === 0) {
+      newsData.finance = [
+        {
+          id: `fin-${Date.now()}-1`,
+          title: '台股收盤漲幅達1.5%，金融科技股領漲',
+          description: '台灣股市今日收盤上漲，金融科技相關股票表現亮眼，投資者看好科技產業前景。',
+          url: 'https://money.udn.com/',
+          source: '經濟日報',
+          category: 'finance',
+          image: '📈',
+          date: new Date().toISOString(),
+          tags: ['台股', '金融科技', '投資']
+        }
+      ];
+    }
+
+    // If no tech news, add fallback data
+    if (newsData.tech.length === 0) {
+      newsData.tech = [
+        {
+          id: `tech-${Date.now()}-1`,
+          title: '人工智能技術突破，新型芯片性能提升200%',
+          description: '最新研究表明，新一代AI芯片在推理速度和能效上取得重大突破，有望推動AI應用普及。',
+          url: 'https://techcrunch.com/',
+          source: 'TechCrunch',
+          category: 'tech',
+          image: '🤖',
+          date: new Date().toISOString(),
+          tags: ['AI', '芯片', '科技']
+        }
+      ];
+    }
+
     // Remove duplicates and sort by date
-    newsData.finance = [...new Map(newsData.finance.map(item => [item.id, item])).values()]
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    newsData.tech = [...new Map(newsData.tech.map(item => [item.id, item])).values()]
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const deduplicateNews = (articles) => {
+      const seen = new Set();
+      return articles.filter(item => {
+        const key = `${item.title}-${item.source}`;
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      }).sort((a, b) => new Date(b.date) - new Date(a.date));
+    };
+
+    newsData.finance = deduplicateNews(newsData.finance);
+    newsData.tech = deduplicateNews(newsData.tech);
 
     saveNewsData(newsData);
     console.log(`✅ News updated: ${newsData.finance.length} finance + ${newsData.tech.length} tech articles`);
@@ -146,6 +175,12 @@ async function fetchNews() {
     console.error('Error fetching news:', err);
     return getNewsData();
   }
+}
+
+// Helper: Strip HTML tags from text
+function stripHtml(html) {
+  if (!html) return '';
+  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
 }
 
 // Routes

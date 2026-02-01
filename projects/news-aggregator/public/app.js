@@ -139,11 +139,11 @@ function renderNews() {
           }
 
           ${
-            article.url && article.url !== '#'
+            article.url && article.url !== '#' && article.url !== 'javascript:void(0)'
               ? `
             <div class="news-read-more">
-              <a href="${article.url}" target="_blank" class="read-more-btn">
-                閱讀全文 →
+              <a href="${article.url}" target="_blank" rel="noopener noreferrer" class="read-more-btn">
+                📖 閱讀全文 →
               </a>
             </div>
           `
