@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,17 +22,50 @@ app.use('/projects/todo', (req, res, next) => {
   express.static(path.join(__dirname, 'projects', 'todo-app', 'public'))(req, res, next);
 });
 
-// Route: News App (proxy to news app)
+// Route: News App API proxy
+app.get('/projects/news/api/news', async (req, res) => {
+  try {
+    const response = await axios.get('http://localhost:3002/api/news', { timeout: 5000 });
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error proxying news API:', err.message);
+    res.status(500).json({ error: 'Failed to fetch news' });
+  }
+});
+
+app.get('/projects/news/api/news/:category', async (req, res) => {
+  try {
+    const { category } = req.params;
+    const response = await axios.get(`http://localhost:3002/api/news/${category}`, { timeout: 5000 });
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error proxying news API:', err.message);
+    res.status(500).json({ error: 'Failed to fetch news' });
+  }
+});
+
+app.post('/projects/news/api/news/refresh', async (req, res) => {
+  try {
+    const response = await axios.post('http://localhost:3002/api/news/refresh', {}, { timeout: 10000 });
+    res.json(response.data);
+  } catch (err) {
+    console.error('Error proxying refresh API:', err.message);
+    res.status(500).json({ error: 'Failed to refresh news' });
+  }
+});
+
+// Route: News App static files
 app.use('/projects/news', (req, res, next) => {
   // Serve the news app's public files
   express.static(path.join(__dirname, 'projects', 'news-aggregator', 'public'))(req, res, next);
 });
 
-// Redirect API requests
+// Redirect TODO API requests
 app.use('/api/todos', (req, res) => {
   res.status(404).json({ error: 'TODO app is running separately. Access it at /projects/todo' });
 });
 
+// Redirect news API requests
 app.use('/api/news', (req, res) => {
   res.status(404).json({ error: 'News app is running separately. Access it at /projects/news' });
 });

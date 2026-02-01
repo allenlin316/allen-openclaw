@@ -1,4 +1,14 @@
-const API_URL = '/api/news';
+// Determine correct API base URL based on how app is being accessed
+const getApiUrl = () => {
+  // Check if running on the home server (through /projects/news)
+  if (window.location.pathname.includes('/projects/news') && window.location.port === '3000') {
+    return '/projects/news/api/news';
+  }
+  // Otherwise, running directly on news app (port 3002)
+  return '/api/news';
+};
+
+const API_URL = getApiUrl();
 
 let allNews = { finance: [], tech: [] };
 let currentCategory = 'all';
@@ -42,7 +52,10 @@ async function handleRefresh() {
   refreshBtn.textContent = '⏳ 更新中...';
   
   try {
-    const response = await fetch('/api/news/refresh', { method: 'POST' });
+    const refreshUrl = window.location.pathname.includes('/projects/news') && window.location.port === '3000'
+      ? '/projects/news/api/news/refresh'
+      : '/api/news/refresh';
+    const response = await fetch(refreshUrl, { method: 'POST' });
     const result = await response.json();
     
     if (result.success) {
