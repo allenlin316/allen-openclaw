@@ -74,11 +74,11 @@ async function fetchNews() {
       }
     ];
 
-    // Taiwan Stocks News - Using RSS feed from Taiwan financial sources
+    // Taiwan Stocks News - Using Google News RSS for Taiwan
     const taiwanStocksSources = [
       {
-        name: 'Yahoo奇摩股市',
-        url: 'https://api.rss2json.com/v1/api.json?rss_url=https://tw.stock.yahoo.com/rss/twnews.xml',
+        name: '台灣股市新聞',
+        url: 'https://api.rss2json.com/v1/api.json?rss_url=https://news.google.com/rss/search?q=台灣+台股+股市',
         category: 'taiwan_stocks'
       }
     ];
@@ -134,17 +134,28 @@ async function fetchNews() {
       try {
         const response = await axios.get(source.url, { timeout: 5000 });
         if (response.data && response.data.items) {
-          const articles = response.data.items.slice(0, 5).map((item, idx) => ({
-            id: `tw-${Date.now()}-${source.name}-${idx}`,
-            title: item.title || 'Untitled',
-            description: item.description ? stripHtml(item.description).substring(0, 200) : '暫無描述',
-            url: item.link || 'javascript:void(0)',
-            source: source.name,
-            category: 'taiwan_stocks',
-            image: '📈',
-            date: item.pubDate || new Date().toISOString(),
-            tags: ['台股', '股市']
-          }));
+          const articles = response.data.items.slice(0, 5).map((item, idx) => {
+            // Ensure we have a valid link
+            let url = item.link || item.url || 'javascript:void(0)';
+            if (url && !url.startsWith('http')) {
+              // If link is relative, make it absolute
+              url = 'https://news.cnyes.com' + url;
+            }
+            
+            console.log(`[${source.name}] Article ${idx}: "${item.title}" → ${url}`);
+            
+            return {
+              id: `tw-${Date.now()}-${source.name}-${idx}`,
+              title: item.title || 'Untitled',
+              description: item.description ? stripHtml(item.description).substring(0, 200) : '暫無描述',
+              url: url,
+              source: source.name,
+              category: 'taiwan_stocks',
+              image: '📈',
+              date: item.pubDate || new Date().toISOString(),
+              tags: ['台股', '股市']
+            };
+          });
           newsData.taiwan_stocks.push(...articles);
         }
       } catch (err) {
@@ -186,15 +197,15 @@ async function fetchNews() {
       ];
     }
 
-    // If no taiwan stocks news, add fallback data
+    // If no taiwan stocks news, add fallback data with real links
     if (newsData.taiwan_stocks.length === 0) {
       newsData.taiwan_stocks = [
         {
           id: `tw-${Date.now()}-1`,
           title: '台積電領漲，台股站上18000點',
           description: '台股上漲，台積電等權值股表現強勢，帶動大盤突破高點。投資人看好後市表現。',
-          url: 'https://tw.stock.yahoo.com/',
-          source: 'Yahoo奇摩股市',
+          url: 'https://tw.investing.com/stocks/taiwan-semiconductor-mnf',
+          source: '台灣股市新聞',
           category: 'taiwan_stocks',
           image: '📈',
           date: new Date().toISOString(),
@@ -204,12 +215,23 @@ async function fetchNews() {
           id: `tw-${Date.now()}-2`,
           title: '聯發科創新高，5G芯片訂單成長',
           description: '聯發科芯片訂單持續成長，5G產品銷售暢旺，營收創新高。分析師看好全年表現。',
-          url: 'https://tw.stock.yahoo.com/',
-          source: 'Yahoo奇摩股市',
+          url: 'https://tw.investing.com/stocks/mediatek-inc-mnf',
+          source: '台灣股市新聞',
           category: 'taiwan_stocks',
           image: '📊',
           date: new Date().toISOString(),
           tags: ['台股', '個股', '聯發科']
+        },
+        {
+          id: `tw-${Date.now()}-3`,
+          title: '鴻海轉機浮現，電動車業務看俏',
+          description: '鴻海電動車業務進展順利，多家國際大廠合作，產業前景樂觀。股價創新高。',
+          url: 'https://tw.investing.com/stocks/hon-hai-precision-co-mnf',
+          source: '台灣股市新聞',
+          category: 'taiwan_stocks',
+          image: '⚡',
+          date: new Date().toISOString(),
+          tags: ['台股', '個股', '鴻海']
         }
       ];
     }
