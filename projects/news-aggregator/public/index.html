@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>財經科技新聞 - 每日更新</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <h1>📰 財經科技新聞</h1>
+        <p class="subtitle">每日最新的金融和科技動態</p>
+      </div>
+      
+      <div class="header-actions">
+        <button id="refreshBtn" class="refresh-btn">🔄 刷新</button>
+        <span id="lastUpdate" class="last-update">最後更新：加載中...</span>
+      </div>
+    </header>
+
+    <main>
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button class="tab-btn active" data-category="all">
+          📊 全部新聞
+        </button>
+        <button class="tab-btn" data-category="finance">
+          💰 財經新聞
+        </button>
+        <button class="tab-btn" data-category="tech">
+          💻 科技新聞
+        </button>
+      </div>
+
+      <!-- News Grid -->
+      <div id="newsGrid" class="news-grid">
+        <!-- News cards will be loaded here -->
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="loading-state">
+        <div class="spinner"></div>
+        <p>加載中...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="empty-state">
+        <p>📭 目前沒有新聞</p>
+      </div>
+    </main>
+
+    <footer>
+      <p>新聞聚合自多個來源 | 每天自動更新</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

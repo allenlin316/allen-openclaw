@@ -15,6 +15,23 @@ const projects = [
     status: 'active',
     url: '/projects/todo',
     github: 'https://github.com/allenlin316/allen-openclaw/tree/main/projects/todo-app'
+  },
+  {
+    id: 'news',
+    emoji: '📰',
+    title: '財經科技新聞',
+    description: '每日最新的財經和科技新聞聚合平台',
+    features: [
+      '財經新聞實時更新',
+      '科技新聞聚合',
+      '分類篩選查看',
+      '每日自動更新',
+      '新聞來源標註'
+    ],
+    tech: 'Node.js + Express + Axios | HTML5 + CSS3 + Vanilla JS',
+    status: 'active',
+    url: '/projects/news',
+    github: 'https://github.com/allenlin316/allen-openclaw/tree/main/projects/news-aggregator'
   }
 ];
 

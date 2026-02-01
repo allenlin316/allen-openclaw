@@ -21,11 +21,19 @@ app.use('/projects/todo', (req, res, next) => {
   express.static(path.join(__dirname, 'projects', 'todo-app', 'public'))(req, res, next);
 });
 
-// Redirect todo API requests to todo app
+// Route: News App (proxy to news app)
+app.use('/projects/news', (req, res, next) => {
+  // Serve the news app's public files
+  express.static(path.join(__dirname, 'projects', 'news-aggregator', 'public'))(req, res, next);
+});
+
+// Redirect API requests
 app.use('/api/todos', (req, res) => {
-  // This would ideally proxy to the todo app's API
-  // For now, we serve a simple message
   res.status(404).json({ error: 'TODO app is running separately. Access it at /projects/todo' });
+});
+
+app.use('/api/news', (req, res) => {
+  res.status(404).json({ error: 'News app is running separately. Access it at /projects/news' });
 });
 
 // 404 Handler
@@ -40,4 +48,5 @@ app.listen(PORT, '0.0.0.0', () => {
   console.log(`   Codespace URL: ${codespaceUrl}`);
   console.log(`   Home: ${codespaceUrl}/`);
   console.log(`   TODO App: ${codespaceUrl}/projects/todo`);
+  console.log(`   News App: ${codespaceUrl}/projects/news`);
 });
