@@ -11,7 +11,7 @@ const getApiUrl = () => {
 
 const API_URL = getApiUrl();
 
-let allNews = { finance: [], tech: [] };
+let allNews = { finance: [], tech: [], taiwan_stocks: [] };
 let currentCategory = 'all';
 
 // DOM Elements
@@ -86,11 +86,13 @@ function handleCategoryChange(category) {
 
 function getFilteredNews() {
   if (currentCategory === 'all') {
-    return [...allNews.finance, ...allNews.tech];
+    return [...allNews.finance, ...allNews.tech, ...allNews.taiwan_stocks];
   } else if (currentCategory === 'finance') {
     return allNews.finance;
   } else if (currentCategory === 'tech') {
     return allNews.tech;
+  } else if (currentCategory === 'taiwan_stocks') {
+    return allNews.taiwan_stocks;
   }
   return [];
 }
@@ -114,7 +116,11 @@ function renderNews() {
           <div class="news-emoji">${article.image || '📰'}</div>
           <div>
             <div class="news-category">
-              ${article.category === 'finance' ? '💰 財經' : '💻 科技'}
+              ${
+                article.category === 'finance' ? '💰 財經' : 
+                article.category === 'tech' ? '💻 科技' : 
+                '📈 台股'
+              }
             </div>
           </div>
         </div>

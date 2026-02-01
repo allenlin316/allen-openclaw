@@ -23,7 +23,7 @@ function getNewsData() {
   } catch (err) {
     console.error('Error reading news data:', err);
   }
-  return { finance: [], tech: [], lastUpdated: null };
+  return { finance: [], tech: [], taiwan_stocks: [], lastUpdated: null };
 }
 
 function saveNewsData(data) {
@@ -41,6 +41,7 @@ async function fetchNews() {
   const newsData = {
     finance: [],
     tech: [],
+    taiwan_stocks: [],
     lastUpdated: new Date().toISOString()
   };
 
@@ -70,6 +71,15 @@ async function fetchNews() {
         name: 'The Verge',
         url: 'https://api.rss2json.com/v1/api.json?rss_url=https://www.theverge.com/rss/index.xml',
         category: 'tech'
+      }
+    ];
+
+    // Taiwan Stocks News - Using RSS feed from Taiwan financial sources
+    const taiwanStocksSources = [
+      {
+        name: 'Yahoo奇摩股市',
+        url: 'https://api.rss2json.com/v1/api.json?rss_url=https://tw.stock.yahoo.com/rss/twnews.xml',
+        category: 'taiwan_stocks'
       }
     ];
 
@@ -119,6 +129,29 @@ async function fetchNews() {
       }
     }
 
+    // Fetch Taiwan Stocks News
+    for (const source of taiwanStocksSources) {
+      try {
+        const response = await axios.get(source.url, { timeout: 5000 });
+        if (response.data && response.data.items) {
+          const articles = response.data.items.slice(0, 5).map((item, idx) => ({
+            id: `tw-${Date.now()}-${source.name}-${idx}`,
+            title: item.title || 'Untitled',
+            description: item.description ? stripHtml(item.description).substring(0, 200) : '暫無描述',
+            url: item.link || 'javascript:void(0)',
+            source: source.name,
+            category: 'taiwan_stocks',
+            image: '📈',
+            date: item.pubDate || new Date().toISOString(),
+            tags: ['台股', '股市']
+          }));
+          newsData.taiwan_stocks.push(...articles);
+        }
+      } catch (err) {
+        console.warn(`Failed to fetch from ${source.name} (taiwan_stocks):`, err.message);
+      }
+    }
+
     // If no finance news, add fallback data
     if (newsData.finance.length === 0) {
       newsData.finance = [
@@ -153,6 +186,34 @@ async function fetchNews() {
       ];
     }
 
+    // If no taiwan stocks news, add fallback data
+    if (newsData.taiwan_stocks.length === 0) {
+      newsData.taiwan_stocks = [
+        {
+          id: `tw-${Date.now()}-1`,
+          title: '台積電領漲，台股站上18000點',
+          description: '台股上漲，台積電等權值股表現強勢，帶動大盤突破高點。投資人看好後市表現。',
+          url: 'https://tw.stock.yahoo.com/',
+          source: 'Yahoo奇摩股市',
+          category: 'taiwan_stocks',
+          image: '📈',
+          date: new Date().toISOString(),
+          tags: ['台股', '個股', '台積電']
+        },
+        {
+          id: `tw-${Date.now()}-2`,
+          title: '聯發科創新高，5G芯片訂單成長',
+          description: '聯發科芯片訂單持續成長，5G產品銷售暢旺，營收創新高。分析師看好全年表現。',
+          url: 'https://tw.stock.yahoo.com/',
+          source: 'Yahoo奇摩股市',
+          category: 'taiwan_stocks',
+          image: '📊',
+          date: new Date().toISOString(),
+          tags: ['台股', '個股', '聯發科']
+        }
+      ];
+    }
+
     // Remove duplicates and sort by date
     const deduplicateNews = (articles) => {
       const seen = new Set();
@@ -166,9 +227,10 @@ async function fetchNews() {
 
     newsData.finance = deduplicateNews(newsData.finance);
     newsData.tech = deduplicateNews(newsData.tech);
+    newsData.taiwan_stocks = deduplicateNews(newsData.taiwan_stocks);
 
     saveNewsData(newsData);
-    console.log(`✅ News updated: ${newsData.finance.length} finance + ${newsData.tech.length} tech articles`);
+    console.log(`✅ News updated: ${newsData.finance.length} finance + ${newsData.tech.length} tech + ${newsData.taiwan_stocks.length} taiwan_stocks articles`);
     return newsData;
 
   } catch (err) {
