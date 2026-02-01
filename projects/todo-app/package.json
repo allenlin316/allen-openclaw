@@ -1,18 +1,17 @@
 {
-  "name": "allen-projects",
+  "name": "todo-app",
   "version": "1.0.0",
-  "description": "Allen's Project Dashboard",
+  "description": "A simple TODO list application",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "todo": "cd projects/todo-app && npm start"
+    "dev": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "cors": "^2.8.5"
   },
-  "keywords": ["projects", "dashboard"],
+  "keywords": ["todo", "task"],
   "author": "allen",
   "license": "MIT"
 }
