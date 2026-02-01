@@ -25,32 +25,35 @@ app.use('/projects/todo', (req, res, next) => {
 // Route: News App API proxy
 app.get('/projects/news/api/news', async (req, res) => {
   try {
+    console.log('[NEWS PROXY] GET /api/news');
     const response = await axios.get('http://localhost:3002/api/news', { timeout: 5000 });
     res.json(response.data);
   } catch (err) {
-    console.error('Error proxying news API:', err.message);
-    res.status(500).json({ error: 'Failed to fetch news' });
+    console.error('[NEWS PROXY ERROR]', err.message);
+    res.status(500).json({ error: 'Failed to fetch news', details: err.message });
   }
 });
 
 app.get('/projects/news/api/news/:category', async (req, res) => {
   try {
     const { category } = req.params;
+    console.log('[NEWS PROXY] GET /api/news/' + category);
     const response = await axios.get(`http://localhost:3002/api/news/${category}`, { timeout: 5000 });
     res.json(response.data);
   } catch (err) {
-    console.error('Error proxying news API:', err.message);
-    res.status(500).json({ error: 'Failed to fetch news' });
+    console.error('[NEWS PROXY ERROR]', err.message);
+    res.status(500).json({ error: 'Failed to fetch news', details: err.message });
   }
 });
 
 app.post('/projects/news/api/news/refresh', async (req, res) => {
   try {
+    console.log('[NEWS PROXY] POST /api/news/refresh');
     const response = await axios.post('http://localhost:3002/api/news/refresh', {}, { timeout: 10000 });
     res.json(response.data);
   } catch (err) {
-    console.error('Error proxying refresh API:', err.message);
-    res.status(500).json({ error: 'Failed to refresh news' });
+    console.error('[NEWS PROXY ERROR]', err.message);
+    res.status(500).json({ error: 'Failed to refresh news', details: err.message });
   }
 });
 

@@ -1,10 +1,11 @@
 // Determine correct API base URL based on how app is being accessed
 const getApiUrl = () => {
-  // Check if running on the home server (through /projects/news)
-  if (window.location.pathname.includes('/projects/news') && window.location.port === '3000') {
+  // Check if running through home server (URL contains /projects/news)
+  if (window.location.pathname.includes('/projects/news')) {
+    // For Codespace/external access, use proxy path
     return '/projects/news/api/news';
   }
-  // Otherwise, running directly on news app (port 3002)
+  // For direct access to news app
   return '/api/news';
 };
 
@@ -52,7 +53,7 @@ async function handleRefresh() {
   refreshBtn.textContent = '⏳ 更新中...';
   
   try {
-    const refreshUrl = window.location.pathname.includes('/projects/news') && window.location.port === '3000'
+    const refreshUrl = window.location.pathname.includes('/projects/news')
       ? '/projects/news/api/news/refresh'
       : '/api/news/refresh';
     const response = await fetch(refreshUrl, { method: 'POST' });
