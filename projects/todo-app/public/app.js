@@ -1,4 +1,6 @@
-const API_URL = '/api/todos';
+// Use LocalStorage instead of API
+const STORAGE_KEY = 'todos_data';
+const API_URL = null; // No backend needed
 
 let todos = [];
 let currentFilter = 'all';
@@ -23,75 +25,64 @@ filterBtns.forEach(btn => {
 loadTodos();
 
 // Functions
-async function loadTodos() {
+function loadTodos() {
   try {
-    const response = await fetch(API_URL);
-    todos = await response.json();
+    const stored = localStorage.getItem(STORAGE_KEY);
+    todos = stored ? JSON.parse(stored) : [];
     renderTodos();
     updateStats();
   } catch (err) {
     console.error('Error loading todos:', err);
+    todos = [];
   }
 }
 
-async function handleAddTodo(e) {
+function saveTodos() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  } catch (err) {
+    console.error('Error saving todos:', err);
+  }
+}
+
+function handleAddTodo(e) {
   e.preventDefault();
   
   const title = todoInput.value.trim();
   if (!title) return;
 
-  try {
-    const response = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title })
-    });
+  const newTodo = {
+    id: Date.now(),
+    title: title,
+    completed: false,
+    createdAt: new Date().toISOString()
+  };
 
-    const newTodo = await response.json();
-    todos.push(newTodo);
-    todoInput.value = '';
-    renderTodos();
-    updateStats();
-  } catch (err) {
-    console.error('Error adding todo:', err);
-    alert('新增失敗，請重試');
-  }
+  todos.push(newTodo);
+  saveTodos();
+  todoInput.value = '';
+  renderTodos();
+  updateStats();
+  todoInput.focus();
 }
 
-async function handleToggleTodo(id) {
+function handleToggleTodo(id) {
   const todo = todos.find(t => t.id === id);
   if (!todo) return;
 
-  try {
-    const response = await fetch(`${API_URL}/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed: !todo.completed })
-    });
-
-    const updated = await response.json();
-    const index = todos.findIndex(t => t.id === id);
-    todos[index] = updated;
-    renderTodos();
-    updateStats();
-  } catch (err) {
-    console.error('Error updating todo:', err);
-    alert('更新失敗，請重試');
-  }
+  todo.completed = !todo.completed;
+  saveTodos();
+  renderTodos();
+  updateStats();
 }
 
-async function handleDeleteTodo(id) {
+function handleDeleteTodo(id) {
   if (!confirm('確定要刪除此項目嗎？')) return;
 
-  try {
-    await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-    todos = todos.filter(t => t.id !== id);
-    renderTodos();
-    updateStats();
-  } catch (err) {
-    console.error('Error deleting todo:', err);
-    alert('刪除失敗，請重試');
-  }
+  todos = todos.filter(t => t.id !== id);
+  saveTodos();
+  renderTodos();
+  updateStats();
 }
 
 function handleFilter(filter) {

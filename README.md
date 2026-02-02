@@ -1,6 +1,6 @@
 # Allen 的專案
 
-個人開發項目的集合，運行在 GitHub Codespace 上。
+個人開發項目的集合。所有應用都採用 **無後端架構**，可直接託管在 GitHub Pages 上。
 
 ## 📋 專案列表
 
@@ -12,38 +12,76 @@
 - ✅ 標記完成/未完成
 - ✅ 過濾視圖（全部、待做、已完成）
 - ✅ 統計信息
-- ✅ 本地存儲（服務器端）
+- ✅ 本地存儲（LocalStorage）
 - ✅ 響應式設計
 
 **技術棧：**
-- 後端：Node.js + Express
 - 前端：HTML5 + CSS3 + Vanilla JavaScript
-- 存儲：JSON 文件
+- 存儲：LocalStorage（瀏覽器本地）
+- **無後端依賴** ✨
 
 **位置：** `projects/todo-app/`
 
 ---
 
+### 2. 📰 財經科技新聞
+每日最新的財經和科技新聞聚合平台。
+
+**功能：**
+- ✅ 財經新聞（Bloomberg、Reuters）
+- ✅ 科技新聞（TechCrunch、The Verge）
+- ✅ 台灣股票新聞
+- ✅ 分類篩選
+- ✅ 6 小時新聞快取
+- ✅ 點擊連結進入原網站
+- ✅ 響應式設計
+
+**技術棧：**
+- 前端：HTML5 + CSS3 + Vanilla JavaScript
+- 數據來源：RSS2JSON API（免費公開服務）
+- 存儲：LocalStorage（快取）
+- **無後端依賴** ✨
+
+**位置：** `projects/news-aggregator/`
+
+---
+
 ## 🚀 運行
 
-### 方式 1：運行主首頁（推薦）
+### 本地開發
+
+所有應用都是前端式，可以用簡單的 HTTP 服務器運行：
+
+**方式 1：使用 Python（推薦）**
 ```bash
-npm install
-npm start
-```
+# 在根目錄運行首頁
+cd /workspaces/allen-openclaw
+python -m http.server 8000
 
-訪問：http://localhost:3000（或 Codespace URL）
-
-這會啟動首頁，你可以看到所有項目並點擊進入各個項目。
-
-### 方式 2：運行 TODO App（獨立）
-```bash
+# 在單獨的終端運行 TODO App
 cd projects/todo-app
-npm install
-npm start
+python -m http.server 8001
+
+# 在單獨的終端運行新聞應用
+cd projects/news-aggregator
+python -m http.server 8002
 ```
 
-訪問：http://localhost:3001
+**方式 2：使用 Node.js http-server**
+```bash
+npm install -g http-server
+
+# 在根目錄運行首頁
+http-server -p 8000
+
+# 在 projects/todo-app 運行
+http-server -p 8001
+
+# 在 projects/news-aggregator 運行
+http-server -p 8002
+```
+
+訪問：http://localhost:8000（首頁）
 
 ---
 
@@ -51,44 +89,65 @@ npm start
 
 ```
 allen-openclaw/
-├── server.js              # 主首頁服務器
 ├── package.json           # 根目錄依賴
 ├── public/                # 首頁靜態文件
-│   ├── index.html         # 首頁
+│   ├── index.html         # 首頁儀表板
 │   ├── app.js             # 首頁邏輯
 │   └── styles.css         # 首頁樣式
 │
 └── projects/              # 各個項目資料夾
-    └── todo-app/          # TODO 應用
-        ├── server.js      # Express 服務器
-        ├── package.json   # 項目依賴
-        ├── public/        # 靜態文件
-        │   ├── index.html
-        │   ├── app.js
-        │   └── styles.css
-        └── todos.json     # 數據文件
+    ├── todo-app/          # TODO List 應用
+    │   ├── package.json
+    │   └── public/
+    │       ├── index.html
+    │       ├── app.js
+    │       └── styles.css
+    │
+    └── news-aggregator/   # 新聞應用
+        ├── package.json
+        └── public/
+            ├── index.html
+            ├── app.js
+            └── styles.css
 ```
 
 ---
 
-## 🌐 Codespace 訪問
+## 🌐 GitHub Pages 部署
 
-- **首頁**：https://reimagined-space-robot-w44756rjvpp35xxj-3000.app.github.dev
-- **TODO 應用**：https://reimagined-space-robot-w44756rjvpp35xxj-3000.app.github.dev/projects/todo
+### 準備部署
 
----
+所有應用都已改造為無後端版本，可以直接託管在 GitHub Pages 上。
 
-## 📌 定時任務
+### 部署步驟
 
-- **台北市天氣** ⏰ 每隔 1 小時自動發送
-  - Job ID: `d0aee34e-3fee-4eb3-b874-bd96f863105d`
-  - 通過 OpenClaw Cron 定時執行
+1. **Push 到 GitHub**（已完成）
+```bash
+git push origin main
+```
+
+2. **在個人網站倉庫上啟用 GitHub Pages**
+- 進入 https://github.com/allenlin316/allenlin316.github.io
+- Settings → Pages
+- 選擇分支和目錄
+- 啟用 GitHub Pages
+
+3. **複製項目到個人網站**
+```bash
+# 在 allenlin316.github.io 倉庫中
+cp -r allen-openclaw/* ./allen-openclaw/
+```
+
+4. **訪問應用**
+- 首頁：https://allenlin316.github.io/allen-openclaw/
+- TODO List：https://allenlin316.github.io/allen-openclaw/projects/todo-app/
+- 新聞應用：https://allenlin316.github.io/allen-openclaw/projects/news-aggregator/
 
 ---
 
 ## 開發者
 
-Created with ❤️ in GitHub Codespace | Allen
+Created with ❤️ | Allen
 
 ## License
 

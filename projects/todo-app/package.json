@@ -1,17 +1,12 @@
 {
   "name": "todo-app",
-  "version": "1.0.0",
-  "description": "A simple TODO list application",
-  "main": "server.js",
+  "version": "2.0.0",
+  "description": "A simple TODO list application (Frontend only)",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "python -m http.server 5000"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5"
-  },
-  "keywords": ["todo", "task"],
+  "keywords": ["todo", "task", "frontend"],
   "author": "allen",
-  "license": "MIT"
+  "license": "MIT",
+  "note": "This is a frontend-only application. No backend server required. Uses LocalStorage for data persistence."
 }

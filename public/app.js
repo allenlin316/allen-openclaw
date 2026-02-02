@@ -9,9 +9,10 @@ const projects = [
       '新增、刪除待辦事項',
       '標記完成狀態',
       '過濾視圖（全部、待做、已完成）',
-      '統計信息'
+      '統計信息',
+      '數據保存在本地 LocalStorage'
     ],
-    tech: 'Node.js + Express | HTML5 + CSS3 + Vanilla JS',
+    tech: 'HTML5 + CSS3 + Vanilla JS（無後端）',
     status: 'active',
     url: '/projects/todo',
     github: 'https://github.com/allenlin316/allen-openclaw/tree/main/projects/todo-app'
@@ -24,11 +25,12 @@ const projects = [
     features: [
       '財經新聞實時更新',
       '科技新聞聚合',
+      '台灣股票新聞',
       '分類篩選查看',
-      '每日自動更新',
-      '新聞來源標註'
+      '新聞快取 6 小時',
+      '點擊連結進入原網站'
     ],
-    tech: 'Node.js + Express + Axios | HTML5 + CSS3 + Vanilla JS',
+    tech: 'RSS2JSON API + HTML5 + CSS3 + Vanilla JS（無後端）',
     status: 'active',
     url: '/projects/news',
     github: 'https://github.com/allenlin316/allen-openclaw/tree/main/projects/news-aggregator'

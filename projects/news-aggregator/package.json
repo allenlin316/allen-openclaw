@@ -1,19 +1,12 @@
 {
   "name": "news-aggregator",
-  "version": "1.0.0",
-  "description": "Daily financial and tech news aggregator",
-  "main": "server.js",
+  "version": "2.0.0",
+  "description": "Daily financial and tech news aggregator (Frontend only)",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
-    "fetch-news": "node fetch-news.js"
+    "dev": "python -m http.server 5001"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "cors": "^2.8.5",
-    "axios": "^1.6.2"
-  },
-  "keywords": ["news", "finance", "tech"],
+  "keywords": ["news", "finance", "tech", "frontend"],
   "author": "allen",
-  "license": "MIT"
+  "license": "MIT",
+  "note": "This is a frontend-only application. Uses RSS2JSON API. No backend server required. Uses LocalStorage for caching."
 }
